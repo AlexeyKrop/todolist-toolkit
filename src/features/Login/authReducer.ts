@@ -1,7 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit'
+import {createSlice} from '@reduxjs/toolkit'
 import {Dispatch} from "redux";
 import {authAPI} from "../../api/todolists-api";
 import {FormikErrorType} from "./Login";
+import {handleServerAppError, handleServerNetworkError} from "../../utils/error-utils";
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -9,18 +10,21 @@ export const authSlice = createSlice({
     isLoggedIn: false
   },
   reducers: {
-    setInLogged(state, action: any){
-      console.log(state)
+    setInLogged(state, action: any) {
       state.isLoggedIn = action.value
     }
   }
 })
 const {setInLogged} = authSlice.actions
+export const authReducer = authSlice.reducer
 export const loginTC = (data: FormikErrorType) => (dispatch: Dispatch<any>) => {
-    authAPI.login(data)
-      .then(res => {
-        if(res.data.resultCode === 0){
-          dispatch(setInLogged({value: true}))
-        }
-      })
+  authAPI.login(data)
+    .then(res => {
+      if (res.data.resultCode === 0) {
+        dispatch(setInLogged({value: true}))
+      } else {
+        handleServerAppError(res.data, dispatch)
+      }
+    })
+    .catch(err => handleServerNetworkError(err, dispatch))
 }
