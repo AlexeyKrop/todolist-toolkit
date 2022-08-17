@@ -1,25 +1,41 @@
+import {Dispatch} from "redux";
+import {authAPI} from "../api/todolists-api";
+import {setInLogged} from "../features/Login/authReducer";
+import {handleServerAppError, handleServerNetworkError} from "../utils/error-utils";
+
 const initialState: InitialStateType = {
-    status: 'idle',
-    error: null
+  status: 'idle',
+  error: null
 }
 
 export const appReducer = (state: InitialStateType = initialState, action: ActionsType): InitialStateType => {
-    switch (action.type) {
-        case 'APP/SET-STATUS':
-            return {...state, status: action.status}
-        case 'APP/SET-ERROR':
-            return {...state, error: action.error}
-        default:
-            return {...state}
-    }
+  switch (action.type) {
+    case 'APP/SET-STATUS':
+      return {...state, status: action.status}
+    case 'APP/SET-ERROR':
+      return {...state, error: action.error}
+    default:
+      return {...state}
+  }
+}
+export const initializeAppTC = () => (dispatch: Dispatch) => {
+  authAPI.me()
+    .then(res => {
+      if (res.data.resultCode === 0) {
+        dispatch(setInLogged({value: true}))
+      } else {
+        handleServerAppError(res.data, dispatch)
+      }
+    })
+    .catch(err => handleServerNetworkError(err, dispatch))
 }
 
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
 export type InitialStateType = {
-    // происходит ли сейчас взаимодействие с сервером
-    status: RequestStatusType
-    // если ошибка какая-то глобальная произойдёт - мы запишем текст ошибки сюда
-    error: string | null
+  // происходит ли сейчас взаимодействие с сервером
+  status: RequestStatusType
+  // если ошибка какая-то глобальная произойдёт - мы запишем текст ошибки сюда
+  error: string | null
 }
 
 export const setAppErrorAC = (error: string | null) => ({type: 'APP/SET-ERROR', error} as const)
@@ -29,5 +45,5 @@ export type SetAppErrorActionType = ReturnType<typeof setAppErrorAC>
 export type SetAppStatusActionType = ReturnType<typeof setAppStatusAC>
 
 type ActionsType =
-    | SetAppErrorActionType
-    | SetAppStatusActionType
+  | SetAppErrorActionType
+  | SetAppStatusActionType

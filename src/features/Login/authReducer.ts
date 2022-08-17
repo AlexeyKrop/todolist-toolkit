@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit'
+import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {Dispatch} from "redux";
 import {authAPI} from "../../api/todolists-api";
 import {FormikErrorType} from "./Login";
@@ -10,12 +10,12 @@ export const authSlice = createSlice({
     isLoggedIn: false
   },
   reducers: {
-    setInLogged(state, action: any) {
-      state.isLoggedIn = action.value
+    setInLogged(state, action: PayloadAction<{value: true}>) {
+      state.isLoggedIn = action.payload.value
     }
   }
 })
-const {setInLogged} = authSlice.actions
+export const {setInLogged} = authSlice.actions
 export const authReducer = authSlice.reducer
 export const loginTC = (data: FormikErrorType) => (dispatch: Dispatch<any>) => {
   authAPI.login(data)
