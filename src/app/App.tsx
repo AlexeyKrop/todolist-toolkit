@@ -15,17 +15,25 @@ import {Menu} from '@mui/icons-material';
 import {ErrorSnackbar} from '../components/ErrorSnackbar/ErrorSnackbar'
 import {Navigate, Route, Routes} from 'react-router-dom'
 import {Login} from "../features/Login/Login";
+import CircularProgress from '@mui/material/CircularProgress'
+import {useAppSelector} from "./hooks";
 
 type PropsType = {
   demo?: boolean
 }
 
 function App({demo = false}: PropsType) {
-  const status = useSelector<AppRootStateType, RequestStatusType>((state) => state.app.status)
+  const {status, isInitialized} = useAppSelector(state => state.app)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(initializeAppTC())
   }, [])
+  if (!isInitialized) {
+    return <div
+      style={{position: 'fixed', top: '30%', textAlign: 'center', width: '100%'}}>
+      <CircularProgress/>
+    </div>
+  }
   return (
     <div className="App">
       <ErrorSnackbar/>
