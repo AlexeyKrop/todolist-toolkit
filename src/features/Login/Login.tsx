@@ -37,6 +37,7 @@ export const Login = () => {
     },
     onSubmit: values => {
       alert(JSON.stringify(values));
+      formik.resetForm()
     },
   })
   return <Grid container justifyContent={'center'}>
@@ -55,14 +56,13 @@ export const Login = () => {
           </FormLabel>
           <FormGroup>
             <TextField type="email"
-                       name="email"
-                       onChange={formik.handleChange}
+                       {...formik.getFieldProps('email')}
                        onBlur={formik.handleBlur}
                        value={formik.values.email} label="Email" margin="normal"/>
-            <TextField name="password"
-                       onChange={formik.handleChange}
+            <TextField
+                       {...formik.getFieldProps('password')}
                        onBlur={formik.handleBlur}
-                       value={formik.values.password} type="password" label="Password"
+                       type="password" label="Password"
                        margin="normal"
             />
             {formik.errors.email ? <div style={{color: 'red'}}>{formik.errors.email}</div> : ''}
